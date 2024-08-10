@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select } from 'antd';
-import { useSelect } from '../hooks/useSelect';
+import { useSelect } from '../../hooks/useSelect';
 
 const photoTakerOptions = [
   { value: 'jack', label: 'Jack' },

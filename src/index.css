@@ -63,12 +63,6 @@ button:focus-visible {
   }
 }
 
-.photo-wall {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
-  padding: 16px;
-}
 
 .photo-container {
   position: relative;
@@ -79,7 +73,6 @@ button:focus-visible {
   width: 100%;
   height: auto;
   display: block;
-  
 }
 
 .button-container {
@@ -90,7 +83,6 @@ button:focus-visible {
   display: flex;
   justify-content: space-around;
   padding: 8px;
-  
 }
 
 .photo-button {
@@ -98,4 +90,73 @@ button:focus-visible {
   border: none;
   padding: 8px 16px;
   cursor: pointer;
+}
+
+.modal-image-container {
+  width: 100%;
+  height: 0;
+  padding-top: 75%; /* Adjust this ratio based on your image aspect ratio (e.g., 75% for 4:3 images) */
+  position: relative;
+}
+
+.modal-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Keeps the aspect ratio, and the entire image is visible */
+}
+
+.reaction-button {
+  display: flex;
+  justify-content: center;
+}
+
+.reaction-button .button-group {
+  display: flex;
+  gap: 50px; /* 增加按钮之间的间距 */
+}
+
+.reaction-button .button-group .ant-btn {
+  font-size: 18px; /* 调整字体大小 */
+  padding: 6px 22.5px; /* 调整按钮内边距 */
+  width: 99px; /* 调整按钮宽度 */
+  height: 48px; /* 调整按钮高度 */
+}
+
+/* PhotoItem.css */
+.photo-item {
+  position: relative;
+  display: inline-block;
+  margin: 10px;
+}
+
+.photo-item img {
+  width: 200px;
+  height: auto;
+}
+
+.photo-item .button-group {
+  position: absolute;
+  bottom: 10px;
+  left: 5px;
+  right: 5px;
+  display: none;
+}
+
+.photo-item:hover .button-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.photo-item .zoom-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: none;
+}
+
+.photo-item:hover .zoom-button {
+  display: block;
 }

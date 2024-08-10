@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Pagination, Modal } from 'antd';
 import PhotoItem from './PhotoItem';
-import { Button } from 'antd';
+import ReactionButtons from './ReactionButtons';
 
 const Gallery = () => {
   const [photos, setPhotos] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPhotos, setTotalPhotos] = useState(0);
   const [zoomedImage, setZoomedImage] = useState(null);
-  const photosPerPage = 20;
+  const [currentPhoto, setCurrentPhoto] = useState(null);
+  const photosPerPage = 100;
 
   useEffect(() => {
     fetchPhotos(currentPage);
@@ -16,18 +17,24 @@ const Gallery = () => {
 
   const fetchPhotos = async (page) => {
     try {
-      // 模擬 API 調用
-      const mockPhotos = Array(20).fill().map((_, i) => ({
-        id: i + 1 + (page - 1) * 20,
-        src: 'src/testImage/DSCF7162.JPG',
-        alt: `照片${i + 1 + (page - 1) * 20}`,
+      const response = await fetch(`api/photos/?page=${page}&limit=${photosPerPage}`);
+      const data = await response.json();
+      
+      const { total, data: photosData } = data;
+
+      const updatedPhotos = photosData.map(photo => ({
+        id: photo.id,
+        src: photo.flickrPhotoSizes.find(size => size.label === 'Medium').source,
+        fullSizeSrc: photo.flickrPhotoSizes.find(size => size.label === 'Original').source,
+        alt: photo.fileName,
         likes: 0,
         dislikes: 0,
         userLiked: false,
         userDisliked: false
       }));
-      setPhotos(mockPhotos);
-      setTotalPhotos(100); // 假設總共有 100 張照片
+      
+      setPhotos(updatedPhotos);
+      setTotalPhotos(total); 
     } catch (error) {
       console.error('Error fetching photos:', error);
     }
@@ -38,63 +45,62 @@ const Gallery = () => {
   };
 
   const handleLike = (id) => {
-    setPhotos(photos.map(photo => {
-      if (photo.id === id) {
-        if (photo.userLiked) {
-          // 如果已經點讚，則取消點讚
-          return { ...photo, likes: photo.likes - 1, userLiked: false };
-        } else {
-          // 如果還沒點讚，則添加點讚
-          // 如果之前點dislike了，則同時取消點dislike
-          return { 
-            ...photo, 
-            likes: photo.likes + 1, 
-            userLiked: true,
+    setPhotos(prevPhotos => {
+      const updatedPhotos = prevPhotos.map(photo => {
+        if (photo.id === id) {
+          return {
+            ...photo,
+            likes: photo.userLiked ? photo.likes - 1 : photo.likes + 1,
+            userLiked: !photo.userLiked,
             dislikes: photo.userDisliked ? photo.dislikes - 1 : photo.dislikes,
             userDisliked: false
           };
         }
-      }
-      return photo;
-    }));
+        return photo;
+      });
+
+      setCurrentPhoto(updatedPhotos.find(photo => photo.id === id));
+
+      return updatedPhotos;
+    });
   };
 
   const handleDislike = (id) => {
-    setPhotos(photos.map(photo => {
-      if (photo.id === id) {
-        if (photo.userDisliked) {
-          // 如果已經點dislike，則取消點dislike
-          return { ...photo, dislikes: photo.dislikes - 1, userDisliked: false };
-        } else {
-          // 如果還沒點dislike，則添加點dislike
-          // 如果之前點讚了，則同時取消點讚
-          return { 
-            ...photo, 
-            dislikes: photo.dislikes + 1, 
-            userDisliked: true,
+    setPhotos(prevPhotos => {
+      const updatedPhotos = prevPhotos.map(photo => {
+        if (photo.id === id) {
+          return {
+            ...photo,
+            dislikes: photo.userDisliked ? photo.dislikes - 1 : photo.dislikes + 1,
+            userDisliked: !photo.userDisliked,
             likes: photo.userLiked ? photo.likes - 1 : photo.likes,
             userLiked: false
           };
         }
-      }
-      return photo;
-    }));
+        return photo;
+      });
+
+      setCurrentPhoto(updatedPhotos.find(photo => photo.id === id));
+
+      return updatedPhotos;
+    });
   };
 
-  const handleZoom = (src) => {
-    setZoomedImage(src);
+  const handleZoom = (photo) => {
+    setZoomedImage(photo.fullSizeSrc);
+    setCurrentPhoto(photo);
   };
 
   return (
     <div className="gallery">
       <div className="photo-grid">
-        {photos.map((photo) => (
+        {photos.map(photo => (
           <PhotoItem 
             key={photo.id} 
             photo={photo} 
             onLike={handleLike}
             onDislike={handleDislike}
-            onZoom={handleZoom}
+            onZoom={() => handleZoom(photo)}
           />
         ))}
       </div>
@@ -109,14 +115,24 @@ const Gallery = () => {
       />
       <Modal
         open={zoomedImage !== null}
-        onCancel={() => setZoomedImage(null)}
-        footer={[
-          <Button key="1">1</Button>,
-          <Button key="2">2</Button>
-        ]}
+        onCancel={() => {
+          setZoomedImage(null);
+          setCurrentPhoto(null);
+        }}
+        footer={
+          currentPhoto ? (
+            <ReactionButtons 
+              photo={currentPhoto} 
+              onLike={handleLike}
+              onDislike={handleDislike}
+            />
+          ) : null
+        }
         width={800}
       >
-        <img src={zoomedImage} alt="Zoomed" style={{ width: '100%' }} />
+        <div className="modal-image-container">
+          <img src={zoomedImage} alt="Zoomed" className="modal-image" />
+        </div>
       </Modal>
     </div>
   );
