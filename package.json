@@ -1,8 +1,8 @@
 {
   "name": "react-together",
   "private": false,
-  "version": "0.0.0",
   "homepage": "https://boboys501.github.io/react-together-frontend",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
