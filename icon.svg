@@ -1,0 +1,9 @@
+<svg version="1.1"
+     baseProfile="full"
+     xmlns="http://www.w3.org/2000/svg">
+  
+  <circle cx="150" cy="75" r="70" fill="green" />
+  <text x="150" y="60" font-size="30" text-anchor="middle" fill="white">COSCUP</text>
+  <text x="150" y="88" font-size="20" text-anchor="middle" fill="white">React</text>
+  <text x="150" y="115" font-size="20" text-anchor="middle" fill="white">Together 📸</text>
+</svg>
