@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { Layout } from 'antd';
+import { Layout, Button } from 'antd';
 import LoadingPage from './components/LoadingPage';
 import Photos from './components/Photos';
-import { initKeycloak } from './services/auth';
+import { initKeycloak, logout } from './services/auth';
 
 const { Header, Footer } = Layout;
 
@@ -23,6 +23,11 @@ const App = () => {
       });
   }, []);
 
+  const handleLogout = () => {
+    logout();
+    setIsAuthenticated(false);
+  };
+
   if (isLoading) {
     return <LoadingPage />;
   }
@@ -30,8 +35,13 @@ const App = () => {
   return (
     <Router>
       <Layout>
-        <Header style={{ position: 'sticky', display: 'flex', alignItems: 'center', color: 'white' }}>
+        <Header style={{ position: 'sticky', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'white' }}>
           <h3>Welcome To React Together</h3>
+          {isAuthenticated && (
+            <Button onClick={handleLogout} type="primary" danger>
+              Logout
+            </Button>
+          )}
         </Header>
         <Routes>
           <Route 
