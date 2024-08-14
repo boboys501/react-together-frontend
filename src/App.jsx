@@ -4,6 +4,7 @@ import { Layout, Button } from 'antd';
 import LoadingPage from './components/LoadingPage';
 import Photos from './components/Photos';
 import { initKeycloak, logout } from './services/auth';
+import PropTypes from 'prop-types';
 
 const { Header, Footer } = Layout;
 
@@ -38,7 +39,7 @@ const App = () => {
         <Header style={{ position: 'sticky', display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'white' }}>
           <h3>Welcome To React Together</h3>
           {isAuthenticated && (
-            <Button onClick={handleLogout} type="primary" danger>
+            <Button href="/logout" type="primary" danger>
               Logout
             </Button>
           )}
@@ -52,6 +53,12 @@ const App = () => {
             path="/photos" 
             element={isAuthenticated ? <Photos /> : <Navigate to="/" replace />} 
           />
+          <Route
+            path="/logout"
+            element={
+              <LogoutRoute handleLogout={handleLogout} />
+            }
+          />
         </Routes>
         <Footer style={{ textAlign: 'center' }}>
           Ant Design ©{new Date().getFullYear()} Created by Ant UED
@@ -59,6 +66,18 @@ const App = () => {
       </Layout>
     </Router>
   );
+};
+
+const LogoutRoute = ({ handleLogout }) => {
+  useEffect(() => {
+    handleLogout();
+  }, [handleLogout]);
+
+  return <Navigate to="/" replace />;
+};
+
+LogoutRoute.propTypes = {
+  handleLogout: PropTypes.func.isRequired,
 };
 
 export default App;
