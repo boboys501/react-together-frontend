@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Pagination, Modal } from 'antd';
 import PhotoItem from './PhotoItem';
 import ReactionButtons from './ReactionButtons';
+import { fetchWithAuth } from '../services/api';
 
 const Gallery = () => {
   const [photos, setPhotos] = useState([]);
@@ -12,14 +13,12 @@ const Gallery = () => {
   const photosPerPage = 100;
 
   useEffect(() => {
-    fetchPhotos(currentPage);
+    fetchPhotosData(currentPage);
   }, [currentPage]);
 
-  const fetchPhotos = async (page) => {
+  const fetchPhotosData = async (page) => {
     try {
-      const response = await fetch(`api/photos/?page=${page}&limit=${photosPerPage}`);
-      const data = await response.json();
-      
+      const data = await fetchWithAuth(`/photos/?page=${page}&limit=${photosPerPage}`);
       const { total, data: photosData } = data;
 
       const updatedPhotos = photosData.map(photo => ({
